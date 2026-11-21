@@ -1,0 +1,11 @@
+{
+  // Static-assets Worker config. Keeps `wrangler deploy` from running framework
+  // auto-configuration (which would add @astrojs/cloudflare — not needed for a
+  // fully static site). Same setup as kinglet-site.
+  "name": "website",
+  "compatibility_date": "2026-11-18",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+  },
+}

@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import Mark from '../components/Mark.astro';
+---
+
+<Base title="Not found — Rushlight Lab" description="This page doesn't exist.">
+  <section class="mx-auto flex min-h-[70vh] max-w-6xl flex-col items-center justify-center px-4 py-24 text-center sm:px-6">
+    <Mark animate class="mb-10 h-24 opacity-40" />
+    <p class="mb-4 font-mono text-xs tracking-[0.24em] text-ash uppercase">404</p>
+    <h1 class="font-mono text-3xl font-extrabold tracking-tight sm:text-5xl">This light's out.</h1>
+    <p class="mt-5 max-w-md text-lg text-ink/70 dark:text-bone/70">Nothing lives at this address — maybe it moved, maybe it never shipped.</p>
+    <a href="/" class="mt-10 inline-flex items-center gap-2 rounded-md bg-flame px-5 py-3 font-mono text-sm font-semibold tracking-[0.12em] text-ink uppercase transition hover:brightness-110">
+      Back home <span aria-hidden="true">→</span>
+    </a>
+  </section>
+</Base>
