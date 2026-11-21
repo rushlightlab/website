@@ -1,0 +1,100 @@
+---
+import Mark from './Mark.astro';
+import { SITE } from '../data/site';
+---
+
+<section class="relative overflow-hidden">
+  <div class="grid-bg pointer-events-none absolute inset-0 opacity-[0.05]"></div>
+  <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pt-16 pb-20 sm:px-6 md:grid-cols-[1.25fr_1fr] md:pt-28 md:pb-32">
+    <div>
+      <p class="mb-6 font-mono text-xs tracking-[0.24em] text-ash uppercase">A one-person software lab</p>
+      <h1 class="font-mono text-4xl leading-[1.05] font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+        Small light.<br /><span class="text-flame-deep dark:text-flame">Shipped fast.</span>
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink/70 dark:text-bone/70">
+        Rushlight Lab is where I build things — open-source tools, apps and experiments of every kind, shipped under one name.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a href="#projects" class="inline-flex items-center gap-2 rounded-md bg-flame px-5 py-3 font-mono text-sm font-semibold tracking-[0.12em] text-ink uppercase transition hover:brightness-110">
+          See the projects <span aria-hidden="true">↓</span>
+        </a>
+        <a
+          href={SITE.github}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-2 rounded-md border border-ink/20 px-5 py-3 font-mono text-sm tracking-[0.12em] uppercase transition hover:border-flame dark:border-line"
+        >
+          GitHub <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="relative flex justify-center md:justify-end">
+      <div class="relative grid h-[340px] w-[280px] place-items-center sm:h-[380px] sm:w-[320px]">
+        <canvas id="embers" class="absolute inset-0 h-full w-full" aria-hidden="true"></canvas>
+        <Mark animate class="relative h-[252px] sm:h-[288px]" label={`${SITE.name} flame`} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const canvas = document.getElementById('embers') as HTMLCanvasElement | null;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (canvas && !reduce) {
+    const ctx = canvas.getContext('2d')!;
+    const P = 6;
+    type Ember = { x: number; y: number; vx: number; vy: number; life: number; decay: number };
+    let embers: Ember[] = [];
+    let W = 0;
+    let H = 0;
+    let visible = true;
+
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      W = canvas.clientWidth;
+      H = canvas.clientHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const spawn = () =>
+      embers.push({
+        x: W / 2 + (Math.random() - 0.5) * W * 0.3,
+        y: H * 0.42 + Math.random() * 20,
+        vx: (Math.random() - 0.3) * 0.35,
+        vy: 0.35 + Math.random() * 0.6,
+        life: 1,
+        decay: 0.006 + Math.random() * 0.01,
+      });
+
+    const loop = () => {
+      if (!visible) return;
+      requestAnimationFrame(loop);
+      if (document.hidden) return;
+      ctx.clearRect(0, 0, W, H);
+      if (Math.random() < 0.18 && embers.length < 28) spawn();
+      embers = embers.filter((p) => p.life > 0);
+      for (const p of embers) {
+        p.y -= p.vy;
+        p.x += p.vx + Math.sin((p.y + p.x) / 22) * 0.15;
+        p.life -= p.decay;
+        ctx.globalAlpha = Math.max(p.life, 0) * 0.9;
+        ctx.fillStyle = '#E9A94A';
+        ctx.fillRect(Math.round(p.x / P) * P, Math.round(p.y / P) * P, P, P);
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    new IntersectionObserver(([entry]) => {
+      const was = visible;
+      visible = entry.isIntersecting;
+      if (visible && !was) loop();
+    }).observe(canvas);
+    loop();
+  }
+</script>

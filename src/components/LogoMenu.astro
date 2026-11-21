@@ -1,0 +1,121 @@
+---
+/**
+ * The header logo. Left-click goes home; right-click (or long-press, or the
+ * context-menu key) opens a brand menu: copy the wordmark or logo as SVG,
+ * download the brand assets, or open the guidelines.
+ */
+import Wordmark from './Wordmark.astro';
+import Mark from './Mark.astro';
+import { BRAND_ZIP } from '../data/site';
+
+const tile = 'grid h-20 place-items-center rounded-lg border border-ink/10 bg-paper text-ink transition-colors group-hover:border-flame/70 group-focus-visible:border-flame dark:border-line dark:bg-ink dark:text-bone';
+const row = 'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm outline-none hover:bg-ink/5 focus-visible:bg-ink/5 dark:hover:bg-line/60 dark:focus-visible:bg-line/60';
+---
+
+<div class="relative" data-logo-menu-root>
+  <a href="/" class="flex items-center" aria-label="Rushlight Lab home — right-click for brand assets" data-logo-link>
+    <Wordmark class="h-[26px]" />
+  </a>
+
+  <div
+    role="menu"
+    aria-label="Brand"
+    hidden
+    data-logo-menu
+    class="absolute top-11 left-0 z-50 w-[min(360px,calc(100vw-2rem))] rounded-xl border border-ink/10 bg-bone p-2 shadow-2xl shadow-ink/20 dark:border-line dark:bg-char"
+  >
+    <div class="grid grid-cols-2 gap-2 p-1">
+      <button type="button" role="menuitem" data-copy-asset="wordmark" class="group text-left outline-none">
+        <span class={tile}><Wordmark class="h-[13px]" /></span>
+        <span class="mt-2 block px-1 text-sm" data-copy-label>Copy wordmark</span>
+      </button>
+      <button type="button" role="menuitem" data-copy-asset="mark" class="group text-left outline-none">
+        <span class={tile}><Mark class="h-9" /></span>
+        <span class="mt-2 block px-1 text-sm" data-copy-label>Copy logo</span>
+      </button>
+    </div>
+    <div class="my-2 border-t border-ink/10 dark:border-line"></div>
+    <a role="menuitem" href={BRAND_ZIP} download class={row}>
+      <span class="font-mono text-flame-deep dark:text-flame" aria-hidden="true">↓</span> Download brand assets
+    </a>
+    <a role="menuitem" href="/brand" class={row}>
+      <span class="font-mono text-flame-deep dark:text-flame" aria-hidden="true">◇</span> Brand guidelines
+    </a>
+  </div>
+</div>
+
+<script>
+  import { BONE, INK, markFile, wordmarkFile } from '../lib/pixel';
+
+  const root = document.querySelector<HTMLElement>('[data-logo-menu-root]');
+  const link = root?.querySelector<HTMLAnchorElement>('[data-logo-link]');
+  const menu = root?.querySelector<HTMLElement>('[data-logo-menu]');
+
+  if (root && link && menu) {
+    const items = () => [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')];
+
+    const open = () => {
+      menu.hidden = false;
+      items()[0]?.focus();
+      document.addEventListener('pointerdown', onOutside, true);
+      document.addEventListener('keydown', onKey);
+      window.addEventListener('scroll', onScroll, { passive: true });
+    };
+    function close(returnFocus = false) {
+      if (menu!.hidden) return;
+      menu!.hidden = true;
+      document.removeEventListener('pointerdown', onOutside, true);
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('scroll', onScroll);
+      if (returnFocus) link!.focus();
+    }
+    function onScroll() {
+      close();
+    }
+    function onOutside(e: PointerEvent) {
+      if (!root!.contains(e.target as Node)) close();
+    }
+    function onKey(e: KeyboardEvent) {
+      const list = items();
+      const i = list.indexOf(document.activeElement as HTMLElement);
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close(true);
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        list[(i + 1) % list.length]?.focus();
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        list[(i - 1 + list.length) % list.length]?.focus();
+      } else if (e.key === 'Tab') close();
+    }
+
+    link.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      if (menu.hidden) open();
+      else close();
+    });
+
+    // Copy as SVG, in the colour that suits the current theme.
+    menu.addEventListener('click', async (e) => {
+      const button = (e.target as HTMLElement).closest<HTMLElement>('[data-copy-asset]');
+      if (!button) {
+        if ((e.target as HTMLElement).closest('a')) close();
+        return;
+      }
+      const fg = document.documentElement.classList.contains('dark') ? BONE : INK;
+      const svg = button.dataset.copyAsset === 'mark' ? markFile(fg) : wordmarkFile(fg);
+      const label = button.querySelector<HTMLElement>('[data-copy-label]');
+      const original = label?.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(svg);
+        if (label) label.textContent = 'Copied SVG';
+      } catch {
+        if (label) label.textContent = 'Copy failed';
+      }
+      window.setTimeout(() => {
+        if (label) label.textContent = original;
+      }, 1400);
+    });
+  }
+</script>

@@ -1,0 +1,153 @@
+---
+import Base from '../layouts/Base.astro';
+import Mark from '../components/Mark.astro';
+import Wordmark from '../components/Wordmark.astro';
+import { faviconSvg } from '../lib/pixel';
+import { BRAND_ASSETS, BRAND_ZIP } from '../data/site';
+
+const SWATCHES = [
+  { name: 'Ink', hex: '#08080A', role: 'Dark background · text on light', cls: 'bg-ink text-bone' },
+  { name: 'Bone', hex: '#F4EDDE', role: 'Light background · text on dark', cls: 'bg-bone text-ink' },
+  { name: 'Flame', hex: '#E9A94A', role: 'The one accent', cls: 'bg-flame text-ink' },
+];
+
+const RULES = [
+  'One accent per screen — the flame is the only amber thing.',
+  "Don't place the mark next to the wordmark: the wordmark's I already carries the flame.",
+  'Keep pixels square. Scale by whole numbers where you can.',
+  'Clear space around either logo: one flame-height on every side.',
+  "Don't recolour, outline, rotate or add effects.",
+];
+
+const card = 'rounded-xl border border-ink/10 dark:border-line';
+const h2 = 'mb-2 font-mono text-2xl font-extrabold tracking-tight';
+const lede = 'mb-8 max-w-2xl text-ink/70 dark:text-bone/70';
+const label = 'font-mono text-[11px] tracking-[0.2em] text-ash uppercase';
+---
+
+<Base title="Brand guidelines — Rushlight Lab" description="The Rushlight Lab wordmark, flame mark, colours, rules and downloadable assets.">
+  <section class="mx-auto max-w-6xl px-4 pt-16 pb-14 sm:px-6 md:pt-24">
+    <p class="mb-3 font-mono text-xs tracking-[0.24em] text-ash uppercase">Brand guidelines</p>
+    <h1 class="font-mono text-4xl font-extrabold tracking-tight sm:text-5xl">Built from pixels.</h1>
+    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink/70 dark:text-bone/70">
+      Everything here is drawn on a pixel grid: a flame for the mark, custom 5×7 lettering for the name. Use the files below as they are.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href={BRAND_ZIP} download class="inline-flex items-center gap-2 rounded-md bg-flame px-5 py-3 font-mono text-sm font-semibold tracking-[0.12em] text-ink uppercase transition hover:brightness-110">
+        Download all assets <span aria-hidden="true">↓</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Wordmark -->
+  <section class="border-t border-ink/10 dark:border-line">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <h2 class={h2}>Wordmark</h2>
+      <p class={lede}>The primary logo. The I is a candle — its flame is the only place the mark appears inside the name.</p>
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class:list={[card, 'grid h-44 place-items-center bg-ink px-6 text-bone']}><Wordmark class="h-[39px]" /></div>
+        <div class:list={[card, 'grid h-44 place-items-center bg-bone px-6 text-ink']}><Wordmark class="h-[39px]" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mark -->
+  <section class="border-t border-ink/10 dark:border-line">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <h2 class={h2}>Mark</h2>
+      <p class={lede}>An amber flame with a core in the text colour. Use it where the wordmark won't fit: avatars, app icons, favicons.</p>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class:list={[card, 'grid h-48 place-items-center bg-ink text-bone']}><Mark animate class="h-24" /></div>
+        <div class:list={[card, 'grid h-48 place-items-center bg-bone text-ink']}><Mark animate class="h-24" /></div>
+        <div class:list={[card, 'flex h-48 flex-col items-center justify-center gap-3 bg-bone text-ink']}>
+          <div class="grid h-24 w-24 place-items-center rounded-full bg-ink text-bone"><Mark animate class="h-[56%]" /></div>
+          <span class={label}>Avatar</span>
+        </div>
+        <div class:list={[card, 'flex h-48 flex-col items-center justify-center gap-4 bg-paper text-ink dark:bg-char dark:text-bone']}>
+          <div class="flex items-end gap-4">
+            {[64, 32, 16].map((px) => <span class="block" style={`width:${px}px;height:${px}px`} set:html={faviconSvg('C').replace('<svg ', '<svg class="h-full w-full" ')} />)}
+          </div>
+          <span class={label}>App icon · 64 / 32 / 16</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Colour + rules -->
+  <section class="border-t border-ink/10 bg-paper/60 dark:border-line dark:bg-char/60">
+    <div class="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.3fr_1fr]">
+      <div>
+        <h2 class={h2}>Colour</h2>
+        <p class={lede}>Click a swatch to copy it.</p>
+        <div class="grid gap-6 sm:grid-cols-3">
+          {
+            SWATCHES.map((s) => (
+              <button type="button" data-copy={s.hex} class:list={[card, 'overflow-hidden text-left']}>
+                <div class:list={[s.cls, 'flex h-24 items-end justify-between p-4 font-mono text-xs tracking-[0.2em] uppercase']}>
+                  <span>{s.name}</span>
+                  <span data-copied class="opacity-0 transition-opacity">Copied</span>
+                </div>
+                <div class="bg-bone p-4 dark:bg-ink">
+                  <p class="font-mono text-sm">{s.hex}</p>
+                  <p class="mt-1 text-xs text-ash">{s.role}</p>
+                </div>
+              </button>
+            ))
+          }
+        </div>
+      </div>
+      <div>
+        <h2 class={h2}>Rules</h2>
+        <p class={lede}>Short list.</p>
+        <ol class="space-y-4">
+          {
+            RULES.map((r, i) => (
+              <li class="flex gap-4 text-sm leading-relaxed text-ink/75 dark:text-bone/75">
+                <span class="font-mono text-flame-deep dark:text-flame">0{i + 1}</span>
+                {r}
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Downloads -->
+  <section class="border-t border-ink/10 dark:border-line">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <h2 class={h2}>Downloads</h2>
+      <p class={lede}>SVG, so they stay sharp at any size. Tip: right-click the logo in the header to copy it straight to your clipboard.</p>
+      <ul class="divide-y divide-ink/10 overflow-hidden rounded-xl border border-ink/10 dark:divide-line dark:border-line">
+        {
+          BRAND_ASSETS.map((a) => (
+            <li>
+              <a href={`/brand/${a.file}`} download class="flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-paper dark:hover:bg-char">
+                <span>
+                  <span class="block text-sm font-medium">{a.label}</span>
+                  <span class="block font-mono text-xs text-ash">{a.file}</span>
+                </span>
+                <span class="font-mono text-flame-deep dark:text-flame" aria-hidden="true">↓</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<script>
+  document.addEventListener('click', async (e) => {
+    const button = (e.target as HTMLElement).closest<HTMLElement>('[data-copy]');
+    if (!button?.dataset.copy) return;
+    try {
+      await navigator.clipboard.writeText(button.dataset.copy);
+    } catch {
+      return;
+    }
+    const tag = button.querySelector('[data-copied]');
+    tag?.classList.remove('opacity-0');
+    window.setTimeout(() => tag?.classList.add('opacity-0'), 1200);
+  });
+</script>

@@ -1,0 +1,28 @@
+---
+import Mark from './Mark.astro';
+import { PRINCIPLES } from '../data/site';
+---
+
+<section id="about" class="border-t border-ink/10 bg-paper/60 dark:border-line dark:bg-char/60">
+  <div class="mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-[0.9fr_1.1fr]">
+    <div>
+      <p class="mb-3 font-mono text-xs tracking-[0.24em] text-ash uppercase">02 — About</p>
+      <h2 class="font-mono text-3xl font-extrabold tracking-tight sm:text-4xl">A rushlight is a small, honest light.</h2>
+      <p class="mt-5 max-w-md leading-relaxed text-ink/70 dark:text-bone/70">
+        Before candles were cheap, people lit their homes with rushes dipped in fat: simple, made by hand, good enough to work by. That's the kind of software I like to make — one person, every kind of project, all under one small light.
+      </p>
+      <Mark animate class="mt-10 h-16" />
+    </div>
+    <ul class="grid gap-px overflow-hidden rounded-xl border border-ink/10 bg-ink/10 sm:grid-cols-2 dark:border-line dark:bg-line">
+      {
+        PRINCIPLES.map((p, i) => (
+          <li class="bg-bone p-7 dark:bg-ink">
+            <p class="mb-4 font-mono text-xs text-flame-deep dark:text-flame">0{i + 1}</p>
+            <h3 class="mb-2 font-mono text-lg font-semibold">{p.title}</h3>
+            <p class="text-sm leading-relaxed text-ink/65 dark:text-bone/65">{p.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

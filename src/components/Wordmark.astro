@@ -1,0 +1,12 @@
+---
+import { wordmarkSvg, type WordKey } from '../lib/pixel';
+
+interface Props {
+  word?: WordKey;
+  class?: string;
+}
+
+const { word = 'W1', class: cls = '' } = Astro.props;
+---
+
+<span class:list={['block', cls]} set:html={wordmarkSvg(word)} />

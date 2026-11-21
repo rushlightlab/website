@@ -1,0 +1,29 @@
+---
+import Mark from './Mark.astro';
+import { SITE } from '../data/site';
+---
+
+<section id="contact" class="relative overflow-hidden border-t border-ink/10 bg-ink text-bone dark:border-line">
+  <div class="grid-bg pointer-events-none absolute inset-0 opacity-[0.06]"></div>
+  <div class="relative mx-auto max-w-6xl px-4 py-24 text-center sm:px-6 md:py-32">
+    <Mark animate class="mx-auto mb-8 h-[72px] w-fit" />
+    <h2 class="font-mono text-3xl font-extrabold tracking-tight sm:text-5xl">Say hello.</h2>
+    <p class="mx-auto mt-5 max-w-xl text-lg text-bone/70">Questions, ideas, or found a bug in something I made? I read every message.</p>
+    <div class="mt-10 flex flex-wrap justify-center gap-3">
+      <a
+        href={`mailto:${SITE.email}`}
+        class="inline-flex items-center gap-2 rounded-md bg-flame px-6 py-4 font-mono text-sm font-semibold tracking-[0.12em] text-ink uppercase transition hover:brightness-110"
+      >
+        {SITE.email}
+      </a>
+      <a
+        href={SITE.github}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-2 rounded-md border border-line px-6 py-4 font-mono text-sm tracking-[0.12em] uppercase transition hover:border-flame"
+      >
+        GitHub <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </div>
+</section>

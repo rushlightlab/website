@@ -1,0 +1,15 @@
+---
+import { markSvg, type MarkKey } from '../lib/pixel';
+
+interface Props {
+  mark?: MarkKey;
+  /** Flicker in the browser (see scripts/flicker.ts). */
+  animate?: boolean;
+  class?: string;
+  label?: string;
+}
+
+const { mark = 'C', animate = false, class: cls = '', label } = Astro.props;
+---
+
+<span class:list={['block', cls]} data-mark={mark} data-animate={animate ? '' : undefined} set:html={markSvg(mark, 0, 'h-full w-auto', label)} />

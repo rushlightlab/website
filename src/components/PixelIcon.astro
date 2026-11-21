@@ -1,0 +1,12 @@
+---
+import { iconSvg, type IconName } from '../lib/pixel';
+
+interface Props {
+  name: IconName;
+  class?: string;
+}
+
+const { name, class: cls = '' } = Astro.props;
+---
+
+<span class:list={['block', cls]} set:html={iconSvg(name)} />

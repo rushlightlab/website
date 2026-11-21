@@ -1,0 +1,136 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { PROJECTS, STATUS_LABEL, SITE } from '../data/site';
+
+const STATUS_DOT = { lit: 'bg-flame', kindling: 'bg-flame/50', spark: 'bg-ash' } as const;
+---
+
+<section id="projects" class="border-t border-ink/10 dark:border-line">
+  <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28">
+    <SectionHeading
+      index="01"
+      eyebrow="Projects"
+      title="Lit so far."
+      intro="Everything built under the Rushlight Lab name — tools, apps and experiments, mostly open source."
+    />
+
+    <div class="grid gap-6">
+      {
+        PROJECTS.map((p) => (
+          <article class:list={['grid overflow-hidden rounded-2xl border border-ink/10 dark:border-line', p.demo && 'lg:grid-cols-[1fr_1.15fr]']}>
+            <div class="flex flex-col p-7 sm:p-10">
+              <div class="mb-6 flex flex-wrap items-center gap-3">
+                <span class="font-mono text-2xl font-extrabold tracking-[0.12em] uppercase">{p.name}</span>
+                <span class="inline-flex items-center gap-2 rounded bg-ink/5 px-2 py-1 font-mono text-[11px] tracking-[0.16em] uppercase dark:bg-char">
+                  <span class:list={['h-2 w-2', STATUS_DOT[p.status]]} aria-hidden="true" />
+                  {STATUS_LABEL[p.status]}
+                </span>
+                {p.badge && (
+                  <span class="rounded border border-flame/60 px-2 py-1 font-mono text-[11px] tracking-[0.16em] text-flame-deep uppercase dark:text-flame">{p.badge}</span>
+                )}
+              </div>
+              <p class="font-mono text-xl leading-snug font-semibold sm:text-2xl">{p.tagline}</p>
+              <p class="mt-4 leading-relaxed text-ink/70 dark:text-bone/70">{p.body}</p>
+              <ul class="mt-6 flex flex-wrap gap-2 font-mono text-[11px] tracking-[0.14em] uppercase">
+                {p.tags.map((t) => <li class="rounded bg-ink/5 px-2.5 py-1 dark:bg-char">{t}</li>)}
+              </ul>
+              <div class="mt-8 flex flex-wrap gap-3 pt-2 lg:mt-auto">
+                {p.links.map((l) => (
+                  <a
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener"
+                    class:list={[
+                      'inline-flex items-center gap-2 rounded-md px-4 py-2.5 font-mono text-xs tracking-[0.12em] uppercase transition',
+                      l.primary ? 'bg-flame font-semibold text-ink hover:brightness-110' : 'border border-ink/20 hover:border-flame dark:border-line',
+                    ]}
+                  >
+                    {l.label} <span aria-hidden="true">↗</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {p.demo === 'log-tail' && (
+              <div class="border-t border-ink/10 bg-ink text-bone lg:border-t-0 lg:border-l dark:border-line">
+                <div class="flex h-11 items-center justify-between border-b border-line px-5 font-mono text-xs">
+                  <span class="text-ash">{p.name.toLowerCase()} · live tail</span>
+                  <span class="flex items-center gap-2 text-flame">
+                    <span class="h-2 w-2 animate-blink bg-flame" />
+                    streaming
+                  </span>
+                </div>
+                <div class="px-5 pt-4 pb-2 font-mono text-xs text-ash">
+                  <div class="flex items-center gap-2 rounded border border-line px-3 py-2">
+                    <span class="text-flame">/</span>
+                    <span>level:error OR timeout</span>
+                  </div>
+                </div>
+                <ol data-log-tail class="h-[264px] overflow-hidden px-5 pb-5 font-mono text-[12px] leading-6" aria-label="Illustrative log stream" />
+              </div>
+            )}
+          </article>
+        ))
+      }
+
+      <a
+        href={SITE.github}
+        target="_blank"
+        rel="noopener"
+        class="group flex flex-col gap-3 rounded-2xl border border-dashed border-ink/15 p-7 transition-colors hover:border-flame/60 sm:flex-row sm:items-center sm:justify-between dark:border-line"
+      >
+        <span class="flex items-center gap-3">
+          <span class="h-2 w-2 bg-ash" aria-hidden="true"></span>
+          <span class="font-mono text-sm text-ash">Next experiment — in the workshop.</span>
+        </span>
+        <span class="font-mono text-xs tracking-[0.14em] whitespace-nowrap uppercase group-hover:text-flame-deep dark:group-hover:text-flame">Follow on GitHub ↗</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Illustrative only — not real data.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SOURCES = ['api', 'web', 'worker', 'auth', 'billing', 'edge'];
+  const MESSAGES = {
+    info: ['request completed 200', 'job finished in 84ms', 'cache warm, 1.2k keys', 'user session refreshed', 'deploy healthy'],
+    warn: ['slow query 612ms', 'retrying upstream (2/3)', 'queue depth 340'],
+    error: ['upstream timeout after 5000ms', 'payment webhook failed 502', 'db connection reset'],
+  } as const;
+  type Level = keyof typeof MESSAGES;
+  const LEVEL_CLASS: Record<Level, string> = { info: 'text-ash', warn: 'text-bone', error: 'text-flame' };
+  const pick = <T,>(a: readonly T[]): T => a[Math.floor(Math.random() * a.length)];
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  const line = (ago = 0) => {
+    const r = Math.random();
+    const level: Level = r < 0.72 ? 'info' : r < 0.9 ? 'warn' : 'error';
+    const d = new Date(Date.now() - ago);
+    const li = document.createElement('li');
+    li.className = 'flex gap-3 whitespace-nowrap';
+    const cells: [string, string][] = [
+      [`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`, 'text-ash/70'],
+      [level, `${LEVEL_CLASS[level]} w-11 uppercase`],
+      [pick(SOURCES), 'text-ash w-14'],
+      [pick(MESSAGES[level]), `${level === 'error' ? 'text-flame' : 'text-bone/80'} truncate`],
+    ];
+    for (const [text, cls] of cells) {
+      const span = document.createElement('span');
+      span.className = cls;
+      span.textContent = text;
+      li.append(span);
+    }
+    return li;
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-log-tail]').forEach((list) => {
+    for (let i = 0; i < 10; i++) list.append(line((10 - i) * (700 + Math.random() * 900)));
+    if (reduce) return;
+    window.setInterval(() => {
+      if (document.hidden) return;
+      list.append(line());
+      while (list.children.length > 11) list.firstElementChild?.remove();
+    }, 900);
+  });
+</script>
