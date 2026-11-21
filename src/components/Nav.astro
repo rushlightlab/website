@@ -44,14 +44,15 @@ const link = 'transition-colors hover:text-flame-deep dark:hover:text-flame';
 </header>
 
 <script>
-  const root = document.documentElement;
-  document.getElementById('theme-toggle')?.addEventListener('click', () => {
-    const dark = root.classList.toggle('dark');
-    try {
-      localStorage.setItem('rl-theme', dark ? 'dark' : 'light');
-    } catch {
-      /* not remembered in private mode */
-    }
+  import { toggleTheme } from '../scripts/theme';
+
+  const toggle = document.getElementById('theme-toggle');
+  toggle?.addEventListener('click', () => {
+    // Re-trigger the frame-by-frame icon swap.
+    toggle.classList.remove('icon-swap');
+    void toggle.offsetWidth;
+    toggle.classList.add('icon-swap');
+    toggleTheme(toggle);
   });
 
   const btn = document.getElementById('menu-toggle');

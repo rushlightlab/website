@@ -36,7 +36,44 @@
   background-size: 32px 32px;
 }
 
+/* ---- Theme switch: pixel ripple (see scripts/theme.ts) ---------------------- */
+/* Keep both snapshots static; the script animates --vt-clip frame by frame. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: vt-hold var(--vt-duration, 620ms) linear both;
+  mix-blend-mode: normal;
+}
+html[data-vt="light"]::view-transition-new(root) {
+  clip-path: var(--vt-clip);
+}
+html[data-vt="snuff"]::view-transition-old(root) {
+  z-index: 2;
+  clip-path: var(--vt-clip);
+}
+html[data-vt="snuff"]::view-transition-new(root) {
+  z-index: 1;
+}
+@keyframes vt-hold {
+  from { opacity: 1; }
+  to { opacity: 1; }
+}
+/* No colour tweens inside the new snapshot — the pixels do the transition. */
+.vt-active,
+.vt-active * {
+  transition: none !important;
+}
+
+/* Toggle icon pops in frame by frame */
+.icon-swap > span {
+  animation: icon-in 320ms steps(4, end) both;
+}
+@keyframes icon-in {
+  from { transform: scale(0.25) rotate(-90deg); }
+  to { transform: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .icon-swap > span { animation: none; }
   html { scroll-behavior: auto; }
   .animate-blink { animation: none; }
 }
